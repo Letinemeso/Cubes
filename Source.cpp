@@ -6,6 +6,7 @@
 
 #include <thread>
 #include <chrono>
+#include <math.h>
 
 #include "ShaderParser.h"
 
@@ -22,47 +23,21 @@ int main() {
 	Shader shader("C:\\Users\\User\\Desktop\\Snare\\Программы\\Repository\\Projection attempt\\v.shader",
 		"C:\\Users\\User\\Desktop\\Snare\\Программы\\Repository\\Projection attempt\\f.shader");
 
-	//MOVE MATRIX
-	glm::mat4x4 move = glm::mat4x4(
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, -1.0f, 1.0f
-	);
+	//CAMERA
+	glm::vec3 cameraLocation = glm::vec3(0.0f, 0.0f, 1.0f);
+	glm::vec3 pointOfView = glm::vec3(0.0f, 0.0f, -1.0f);
+	glm::vec3 pointOfViewTop = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::mat4x4 modelTransf = glm::lookAt(cameraLocation, pointOfView + cameraLocation , pointOfViewTop);
 
-	//ANOTHER MATRICES
-	glm::mat4x4 ortho = glm::ortho(0.0f, 500.0f, 0.0f, 500.0f, -1.0f, 1.0f);
-	
-	float angle = 0.0f;
-	glm::vec3 axis(0.0f, 1.0f, 0.0f);
-	glm::mat4x4 rotate = glm::rotate(angle, axis);
+	glm::mat4x4 perspProjection = glm::perspective(glm::radians(90.0f), 500.0f/500.0f, 0.1f, 20.0f);
 
-	glm::mat4x4 size = glm::mat4x4(
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-	);
-
-	glm::mat4x4 modelTransf = glm::translate(glm::mat4x4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-	glm::mat4x4 perspProjection = glm::perspective(glm::radians(90.0f), 500.0f/500.0f, 0.1f, 10.0f);
-
-
-
-
-	shader.initMatrix(ortho, "projection");
-	shader.initMatrix(move, "move");
-	shader.initMatrix(rotate, "rotate");
-	//shader.initMatrix(size, "size");
-
+	//MATRICES SETUP
 	shader.initMatrix(modelTransf, "modelTransf");
 	shader.initMatrix(perspProjection, "perspProjection");
 
 
-
-
-	//COORDINATES SETUP
-	float cX = 0.0f, cY = 0.0f, cZ = 0.0f;
+	//FIRST CUBE
+	float cX = 0.5f, cY = 0.0f, cZ = 0.0f;
 	float halfSide = 0.3f;
 	float cvc[8][3] = {
 		{cX - halfSide, cY - halfSide, cZ + halfSide}, //0
@@ -107,6 +82,53 @@ int main() {
 		cvc[5][0], cvc[5][1], cvc[5][2],
 
 	};
+	
+	//SECOND CUBE
+	float cX2 = -0.5f, cY2 = 0.0f, cZ2 = 0.0f;
+	float cvc2[8][3] = {
+		{cX2 - halfSide, cY2 - halfSide, cZ2 + halfSide}, //0
+		{cX2 + halfSide, cY2 - halfSide, cZ2 + halfSide}, //1
+		{cX2 + halfSide, cY2 + halfSide, cZ2 + halfSide}, //2
+		{cX2 - halfSide, cY2 + halfSide, cZ2 + halfSide}, //3
+
+		{cX2 - halfSide, cY2 - halfSide, cZ2 - halfSide}, //4
+		{cX2 + halfSide, cY2 - halfSide, cZ2 - halfSide}, //5
+		{cX2 + halfSide, cY2 + halfSide, cZ2 - halfSide}, //6
+		{cX2 - halfSide, cY2 + halfSide, cZ2 - halfSide}  //7
+	};
+	float cubeCoords2[72] = {
+
+		cvc2[4][0], cvc2[4][1], cvc2[4][2],	//LEFT (yellow)
+		cvc2[0][0], cvc2[0][1], cvc2[0][2],
+		cvc2[3][0], cvc2[3][1], cvc2[3][2],
+		cvc2[7][0], cvc2[7][1], cvc2[7][2],
+
+		cvc2[0][0], cvc2[0][1], cvc2[0][2],	//FORWARD (UGLY-PINK)
+		cvc2[1][0], cvc2[1][1], cvc2[1][2],
+		cvc2[2][0], cvc2[2][1], cvc2[2][2],
+		cvc2[3][0], cvc2[3][1], cvc2[3][2],
+
+		cvc2[6][0], cvc2[6][1], cvc2[6][2],	//RIGHT (purple)
+		cvc2[2][0], cvc2[2][1], cvc2[2][2],
+		cvc2[1][0], cvc2[1][1], cvc2[1][2],
+		cvc2[5][0], cvc2[5][1], cvc2[5][2],
+
+		cvc2[7][0], cvc2[7][1], cvc2[7][2],	//BACKWARD (red)
+		cvc2[6][0], cvc2[6][1], cvc2[6][2],
+		cvc2[5][0], cvc2[5][1], cvc2[5][2],
+		cvc2[4][0], cvc2[4][1], cvc2[4][2],
+
+		cvc2[3][0], cvc2[3][1], cvc2[3][2],	//TOP (green)
+		cvc2[2][0], cvc2[2][1], cvc2[2][2],
+		cvc2[6][0], cvc2[6][1], cvc2[6][2],
+		cvc2[7][0], cvc2[7][1], cvc2[7][2],
+
+		cvc2[4][0], cvc2[4][1], cvc2[4][2],	//BOTTOM (blue)
+		cvc2[5][0], cvc2[5][1], cvc2[5][2],
+		cvc2[1][0], cvc2[1][1], cvc2[1][2],
+		cvc2[0][0], cvc2[0][1], cvc2[0][2],
+
+	};
 
 	//COLORS SETUP
 	float cubeColors[72]{
@@ -141,7 +163,7 @@ int main() {
 		1.0f, 0.0f, 1.0f
 	};
 
-	//INITIALIZING VERTICES
+	//INITIALIZING VERTICES FOR CUBES
 	unsigned int vertexArray;
 	glGenVertexArrays(1, &vertexArray);
 	glBindVertexArray(vertexArray);
@@ -155,62 +177,183 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, buffer[1]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 72 + 1, cubeColors, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+	unsigned int vertexArray2;
+	glGenVertexArrays(1, &vertexArray2);
+	glBindVertexArray(vertexArray2);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	unsigned int buffer2[2];
+	glGenBuffers(2, buffer2);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer2[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 72 + 1, cubeCoords2, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer2[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 72 + 1, cubeColors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+	
+
+	//UGLY BROWN FLOOR 
+	float floorSquareCoords[] = {
+		-2.0f, -0.3f, -2.0f,
+		-2.0f, -0.3f, 2.0f,
+		2.0f, -0.3f, 2.0f,
+		2.0f, -0.3f, -2.0f
+
+	};
+	float floorColors[] = {
+		0.2f, 0.2f, 0.0f,
+		0.2f, 0.2f, 0.0f,
+		0.2f, 0.2f, 0.0f,
+		0.2f, 0.2f, 0.0f
+	};
+
+	unsigned int floorArray;
+	glGenVertexArrays(1, &floorArray);
+	glBindVertexArray(floorArray);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	unsigned int floorBuffer[2];
+	glGenBuffers(2, floorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, floorBuffer[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 12 + 1, floorSquareCoords, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, floorBuffer[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 12 + 1, floorColors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+
+
 
 	while (!glfwWindowShouldClose(wind)) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		if (glfwGetKey(wind, GLFW_KEY_UP)) {
-
-			move[3][2] += 0.1f;
-
-			
-			//MOVING VIA CHANGING CUBE COORDINATES
-			/*for (int i = 2; i < 24; i += 3) {
-				cubeCoords[i] -= 0.01f;
-			}
-			glBindBuffer(GL_ARRAY_BUFFER, buffer[0]);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 72 + 1, cubeCoords, GL_STATIC_DRAW);*/
-
-
-			shader.initMatrix(move, "move");
-
-			std::cout << move[3][2] << "\n";
+		if (glfwGetKey(wind, GLFW_KEY_W)) {
+			cameraLocation = glm::vec3(cameraLocation[0] - (0.01 * -pointOfView[0]), cameraLocation[1], cameraLocation[2] - (0.01f * -pointOfView[2]));
+			modelTransf = glm::lookAt(cameraLocation, pointOfView + cameraLocation, pointOfViewTop);
+			shader.initMatrix(modelTransf, "modelTransf");
 		}
-		if (glfwGetKey(wind, GLFW_KEY_DOWN)) {
-
-			move[3][2] -= 0.1f;
-
-			//MOVING VIA CHANGING CUBE COORDINATES
-			/*for (int i = 2; i < 24; i += 3) {
-				cubeCoords[i] += 0.01f;
-			}
-
-			glBindBuffer(GL_ARRAY_BUFFER, buffer[0]);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 72 + 1, cubeCoords, GL_STATIC_DRAW);*/
-
-			
-			shader.initMatrix(move, "move");
-
-			std::cout << move[3][2] << "\n";
+		if (glfwGetKey(wind, GLFW_KEY_S)) {
+			cameraLocation = glm::vec3(cameraLocation[0] + (0.01 * -pointOfView[0]), cameraLocation[1], cameraLocation[2] + (0.01 * -pointOfView[2]));
+			modelTransf = glm::lookAt(cameraLocation, pointOfView + cameraLocation, pointOfViewTop);
+			shader.initMatrix(modelTransf, "modelTransf");
 		}
-
 		if (glfwGetKey(wind, GLFW_KEY_LEFT)) {
-			angle -= 0.02f;
-			rotate = glm::rotate(angle, axis);
-			shader.initMatrix(rotate, "rotate");
+			cameraLocation = glm::vec3(cameraLocation[0] - (0.01 * -pointOfView[2]), cameraLocation[1], cameraLocation[2] + (0.01 * -pointOfView[0]));
+			modelTransf = glm::lookAt(cameraLocation, pointOfView + cameraLocation, pointOfViewTop);
+			shader.initMatrix(modelTransf, "modelTransf");
+
 		}
 		if (glfwGetKey(wind, GLFW_KEY_RIGHT)) {
-			angle += 0.02f;
-			rotate = glm::rotate(angle, axis);
-			shader.initMatrix(rotate, "rotate");
+			cameraLocation = glm::vec3(cameraLocation[0] + (0.01 * -pointOfView[2]), cameraLocation[1], cameraLocation[2] - (0.01 * -pointOfView[0]));
+			modelTransf = glm::lookAt(cameraLocation, pointOfView + cameraLocation, pointOfViewTop);
+			shader.initMatrix(modelTransf, "modelTransf");
+
+		}
+		if (glfwGetKey(wind, GLFW_KEY_A)) {
+			if (((pointOfView[0] > -1.0f) && (pointOfView[0] <= 0.0f))&& (pointOfView[2] < 0.0f)) {
+				pointOfView = glm::vec3(pointOfView[0] - 0.025f, pointOfView[1], pointOfView[2] + 0.025f);
+
+				if ((pointOfView[0] < -1.0f) && (pointOfView[2] > 0.0f)) {
+					pointOfView[0] = -1.0f;
+					pointOfView[2] = 0.0f;
+				}
+			}
+			else if ((pointOfView[0] <= 0.0f) && (pointOfView[2] < 1.0f)) {
+				pointOfView = glm::vec3(pointOfView[0] + 0.025f, pointOfView[1], pointOfView[2] + 0.025f);
+
+				if ((pointOfView[0] > 0.0f) && (pointOfView[2] > 1.0f)) {
+					pointOfView[0] = 0.0f;
+					pointOfView[2] = 1.0f;
+				}
+			}
+			else if ((pointOfView[0] <= 1.0f) && (pointOfView[2] > 0.0f)) {
+				pointOfView = glm::vec3(pointOfView[0] + 0.025f, pointOfView[1], pointOfView[2] - 0.025f);
+
+				if ((pointOfView[0] > 1.0f) && (pointOfView[2] < 0.0f)) {
+					pointOfView[0] = 1.0f;
+					pointOfView[2] = 0.0f;
+				}
+			}
+			else if ((pointOfView[0] > 0.0f) && (pointOfView[2] > -1.0f)) {
+				pointOfView = glm::vec3(pointOfView[0] - 0.025f, pointOfView[1], pointOfView[2] - 0.025f);
+
+				if ((pointOfView[0] < 0.0f) && (pointOfView[2] < -1.0f)) {
+					pointOfView[0] = 0.0f;
+					pointOfView[2] = -1.0f;
+				}
+
+				if (pointOfView[0] < 0.025f) {
+					pointOfView[0] = 0.0f;
+					pointOfView[2] = -1.0f;
+				}
+			}
+			modelTransf = glm::lookAt(cameraLocation, cameraLocation + pointOfView, pointOfViewTop);
+			shader.initMatrix(modelTransf, "modelTransf");
+		}
+		if (glfwGetKey(wind, GLFW_KEY_D)) {
+			if (((pointOfView[0] < 1.0f) && (pointOfView[0] >= 0.0f)) && (pointOfView[2] < 0.0f)) {
+				pointOfView = glm::vec3(pointOfView[0] + 0.025f, pointOfView[1], pointOfView[2] + 0.025f);
+
+				if ((pointOfView[0] > 1.0f) && (pointOfView[2] > 0.0f)) {
+					pointOfView[0] = 1.0f;
+					pointOfView[2] = 0.0f;
+				}
+			}
+			else if ((pointOfView[0] >= 0.0f) && (pointOfView[2] < 1.0f)) {
+				pointOfView = glm::vec3(pointOfView[0] - 0.025f, pointOfView[1], pointOfView[2] + 0.025f);
+
+				if ((pointOfView[0] < 0.0f) && (pointOfView[2] > 1.0f)) {
+					pointOfView[0] = 0.0f;
+					pointOfView[2] = 1.0f;
+				}
+			}
+			else if ((pointOfView[0] >= -1.0f) && (pointOfView[2] > 0.0f)) {
+				pointOfView = glm::vec3(pointOfView[0] - 0.025f, pointOfView[1], pointOfView[2] - 0.025f);
+
+				if ((pointOfView[0] <-1.0f) && (pointOfView[2] < 0.0f)) {
+					pointOfView[0] = -1.0f;
+					pointOfView[2] = 0.0f;
+				}
+			}
+			else if ((pointOfView[0] <= 0.0f) && (pointOfView[2] > -1.0f)) {
+				pointOfView = glm::vec3(pointOfView[0] + 0.025f, pointOfView[1], pointOfView[2] - 0.025f);
+
+				if ((pointOfView[0] > 0.0f) && (pointOfView[2] < -1.0f)) {
+					pointOfView[0] = 0.0f;
+					pointOfView[2] = -1.0f;
+				}
+
+				if (pointOfView[0] > -0.025f) {
+					pointOfView[0] = 0.0f;
+					pointOfView[2] = -1.0f;
+				}
+			}
+			modelTransf = glm::lookAt(cameraLocation, cameraLocation + pointOfView, pointOfViewTop);
+			shader.initMatrix(modelTransf, "modelTransf");
 		}
 
+		if (glfwGetKey(wind, GLFW_KEY_ESCAPE)) {
+			return 0;
+		}
 
-		glDrawArrays(GL_QUADS, 0, 24);
+		float distance = sqrt((cameraLocation[0] - cX) * (cameraLocation[0] - cX) + (cameraLocation[2] - cZ) * (cameraLocation[2] - cZ));
+		float distance2 = sqrt((cameraLocation[0] - cX2) * (cameraLocation[0] - cX2) + (cameraLocation[2] - cZ2) * (cameraLocation[2] - cZ2));
 
+		glBindVertexArray(floorArray);
+		glDrawArrays(GL_QUADS, 0, 4);
 
+		if (distance > distance2) {
+			glBindVertexArray(vertexArray);
+			glDrawArrays(GL_QUADS, 0, 24);
+			glBindVertexArray(vertexArray2);
+			glDrawArrays(GL_QUADS, 0, 24);
+		}
+		else {
+			glBindVertexArray(vertexArray2);
+			glDrawArrays(GL_QUADS, 0, 24);
+			glBindVertexArray(vertexArray);
+			glDrawArrays(GL_QUADS, 0, 24);
+		}
 		
-
 		glfwPollEvents();
 		glfwSwapBuffers(wind);
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000/60));
