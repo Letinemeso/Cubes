@@ -1,0 +1,7 @@
+﻿  Source.cpp
+C:\Users\User\Desktop\Snare\Программы\Repository\Projection attempt\Source.cpp(145,58): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+C:\Users\User\Desktop\Snare\Программы\Repository\Projection attempt\Source.cpp(155,58): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+C:\Users\User\Desktop\Snare\Программы\Repository\Projection attempt\Source.cpp(157,58): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+C:\Users\User\Desktop\Snare\Программы\Repository\Projection attempt\Source.cpp(166,58): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+C:\Users\User\Desktop\Snare\Программы\Repository\Projection attempt\Source.cpp(168,58): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+  Projection attempt.vcxproj -> C:\Users\User\Desktop\Snare\Программы\Repository\Projection attempt\Debug\Projection attempt.exe
